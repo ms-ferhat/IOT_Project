@@ -21,42 +21,59 @@
 #include "../2-PORT/PORT_interface.h"
 #include "../7-USART/Uasrt_inteface.h"
 
-uint8_t Packet_buffer[200]={0};
-uint8_t packetInd=0;
-uint8_t packetID=1;
+u8 Packet_buffer[255]={0};
+u8 packetInd=0;
+u8 packetID=1;
+u8 undefined_topic[]="undefined Topic";
 
 
-void MQTT_connect(uint8_t* Client_ID)
-{
-	uint8_t remlen=(12+strlen(Client_ID));
-	//encode packet
-	packetInd=0;
-	Packet_buffer[packetInd++]=CONNECT_PACKET;		// b0 packet type 0x10 for connect packet
-	Packet_buffer[packetInd++]=remlen;
-	/* Pocket name*/
-	//name length
-	Packet_buffer[packetInd++]=0x00;
-	Packet_buffer[packetInd++]=0x04;
-	// name
-	strcpy(Packet_buffer+packetInd,"MQTT");
-	packetInd +=4;
+void MQTT_connect(uint8_t* Client_ID, uint8_t* username, uint8_t* password) {
+	uint8_t username_len = strlen(username);
+	uint8_t password_len = strlen(password);
+	uint8_t client_id_len = strlen(Client_ID);
 
-	//packet idnterifer
-	Packet_buffer[packetInd++]=0x04;
-	Packet_buffer[packetInd++]=0x02;
-	Packet_buffer[packetInd++]=0xff;
-	Packet_buffer[packetInd++]=0xff;
+	uint8_t remlen = 12 + client_id_len + 2 + username_len + 2 + password_len;  // Adjust remaining length to include username and password
 
-	/* packet ID */
-	//ID length
-	Packet_buffer[packetInd++]=0x00;
-	Packet_buffer[packetInd++]=strlen(Client_ID);
-	// name
-	strcpy(Packet_buffer+packetInd,Client_ID);
-	packetInd +=strlen(Client_ID);
+	// Encode packet
+	packetInd = 0;
+	Packet_buffer[packetInd++] = CONNECT_PACKET;  // Packet type 0x10 for connect packet
+	Packet_buffer[packetInd++] = remlen;
 
+	// Protocol Name
+	Packet_buffer[packetInd++] = 0x00;
+	Packet_buffer[packetInd++] = 0x04;
+	strcpy(Packet_buffer + packetInd, "MQTT");
+	packetInd += 4;
 
-	//send packet
+	// Protocol Level
+	Packet_buffer[packetInd++] = 0x04;  // Protocol level 4 for MQTT 3.1.1
+
+	// Connect Flags (username and password flags set)
+	Packet_buffer[packetInd++] = 0xC2;  // Flags: 0xC2 (Clean Session, Username, Password)
+
+	// Keep Alive
+	Packet_buffer[packetInd++] = 0x00;
+	Packet_buffer[packetInd++] = 0xFF;
+
+	// Client ID
+	Packet_buffer[packetInd++] = 0x00;
+	Packet_buffer[packetInd++] = client_id_len;
+	strcpy(Packet_buffer + packetInd, Client_ID);
+	packetInd += client_id_len;
+
+	// Username
+	Packet_buffer[packetInd++] = 0x00;
+	Packet_buffer[packetInd++] = username_len;
+	strcpy(Packet_buffer + packetInd, username);
+	packetInd += username_len;
+
+	// Password
+	Packet_buffer[packetInd++] = 0x00;
+	Packet_buffer[packetInd++] = password_len;
+	strcpy(Packet_buffer + packetInd, password);
+	packetInd += password_len;
+
+	// Send packet
 	Uart_u8SendBuffer(Packet_buffer, packetInd);
 }
 
@@ -135,4 +152,43 @@ void MQTT_Subscribe(uint8_t* Topic)
 	Uart_u8SendBuffer(Packet_buffer, packetInd);
 
 }
+void MQTT_recive_message(u8 *Payload,u8 *header)
+{
+
+
+	u8 remaining_length;
+	u16 topic_length;
+
+	// Read the fixed header (Control packet type and flags)
+	Uart_u8recive(header);
+
+	// Read the remaining length (Variable-length field could be more than one byte)
+	Uart_u8recive(&remaining_length);
+	// For simplicity, we assume one byte for now
+
+	// Read the next two bytes (Topic length)
+	u8 topic_len_msb ,topic_len_lsb ;
+	Uart_u8recive(&topic_len_msb);
+	Uart_u8recive(&topic_len_lsb);
+
+	// Calculate topic length
+	topic_length = (topic_len_msb << 8) | topic_len_lsb;
+
+	// Read the topic based on the topic length
+	for (u16 i = 0; i < topic_length; i++) {
+		Uart_u8recive(&Packet_buffer[i]);  // Store each byte of the topic
+	}
+
+	// Null-terminate the topic string
+	Packet_buffer[topic_length] = '\0';
+
+	// Skip the payload (if any) - you can handle this part later
+	int payload_length = remaining_length - (2 + topic_length);
+	for (u16 i = 0; i < payload_length; i++) {
+		Uart_u8recive(Payload);
+	}
+
+
+}
+
 

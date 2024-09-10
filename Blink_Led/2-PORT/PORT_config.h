@@ -12,18 +12,18 @@
 /*choose 0 for input 1 for output*/
 
  #define PORTA_PIN0_dir			1
- #define PORTA_PIN1_dir			1
- #define PORTA_PIN2_dir			1
- #define PORTA_PIN3_dir			1
- #define PORTA_PIN4_dir			1
- #define PORTA_PIN5_dir			1
- #define PORTA_PIN6_dir			1
- #define PORTA_PIN7_dir			1
+ #define PORTA_PIN1_dir			0
+ #define PORTA_PIN2_dir			0
+ #define PORTA_PIN3_dir			0
+ #define PORTA_PIN4_dir			0
+ #define PORTA_PIN5_dir			0
+ #define PORTA_PIN6_dir			0
+ #define PORTA_PIN7_dir			0
 	
 	
- #define PORTB_PIN0_dir			1
- #define PORTB_PIN1_dir			1
- #define PORTB_PIN2_dir			1
+ #define PORTB_PIN0_dir			0
+ #define PORTB_PIN1_dir			0
+ #define PORTB_PIN2_dir			0
  #define PORTB_PIN3_dir			0
  #define PORTB_PIN4_dir			0
  #define PORTB_PIN5_dir			0
