@@ -16,10 +16,12 @@
 #include "util/delay.h"
 #include <string.h>
 
-u8 str[200];
-int  led_flag=0;
-u8 on_Topic[] ="Phone/Ms/Blink_Led/on";
-u8 off_Topic[] ="Phone/Ms/Blink_Led/off";
+u8 Topic[] ="Phone/Blink_Led";
+u8 Client_id[]="Client1";
+u8 username[]="MoTSensorKitv2.0_Menya";
+u8 password[]="MoTSensorKitv2.0_Menya_pass";
+u8 payload =0;
+u8 fixed_header;
 
 
 void main(void)
@@ -27,28 +29,28 @@ void main(void)
 	PORT_voidInti();
 	Uart_voidInti();
 	GIE_voidEnable();
-	MQTT_connect("Client1", "MoTSensorKitv2.0_Menya", "MoTSensorKitv2.0_Menya_pass");
+	MQTT_connect(Client_id, username, password);
+	MQTT_recive_message(&payload, &fixed_header);
 	_delay_ms(2000);
-	MQTT_Subscribe(on_Topic);
-	_delay_ms(2000);
-	//MQTT_Subscribe(off_Topic);
-	_delay_ms(2000);
-	//Uart_u8recive_StringA(str, 20, &uart_notif);
+	MQTT_Subscribe(Topic);
+	MQTT_recive_message(&payload, &fixed_header);
+	_delay_ms(5000);
+
+
 	while(1)
 	{
-		MQTT_recive_message(str);
-		if(str== on_Topic)
+		MQTT_recive_message(&payload, &fixed_header);
+		if(payload=='1')
 		{
 			DIO_u8SetPin(DIO_u8PORTA, DIO_u8PIN0, DIO_u8PIN_HIGH);
-		}
-		else if(str == off_Topic)
-		{
+		}else if(payload =='0'){
 			DIO_u8SetPin(DIO_u8PORTA, DIO_u8PIN0, DIO_u8PIN_LOW);
 		}
-		else{
-			UART_u8SendString("undefined Topic\n\r");
-		}
-//		_delay_ms(500);
+		_delay_ms(100);
+//		else{
+//			UART_u8SendString("undifed payload\n\r");
+//		}
+
 	}
 }
 

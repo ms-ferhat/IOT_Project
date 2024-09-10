@@ -152,49 +152,43 @@ void MQTT_Subscribe(uint8_t* Topic)
 	Uart_u8SendBuffer(Packet_buffer, packetInd);
 
 }
-void MQTT_recive_message(u8* Topic)
+void MQTT_recive_message(u8 *Payload,u8 *header)
 {
 
-	u8 fixed_header;
+
 	u8 remaining_length;
 	u16 topic_length;
 
 	// Read the fixed header (Control packet type and flags)
-	Uart_u8recive(&fixed_header);
-	if(fixed_header == 0x30){
-		// Read the remaining length (Variable-length field could be more than one byte)
-		Uart_u8recive(&remaining_length);
-		// For simplicity, we assume one byte for now
+	Uart_u8recive(header);
 
-		// Read the next two bytes (Topic length)
-		u8 topic_len_msb ,topic_len_lsb ;
-		Uart_u8recive(&topic_len_msb);
-		Uart_u8recive(&topic_len_lsb);
+	// Read the remaining length (Variable-length field could be more than one byte)
+	Uart_u8recive(&remaining_length);
+	// For simplicity, we assume one byte for now
 
-		// Calculate topic length
-		topic_length = (topic_len_msb << 8) | topic_len_lsb;
+	// Read the next two bytes (Topic length)
+	u8 topic_len_msb ,topic_len_lsb ;
+	Uart_u8recive(&topic_len_msb);
+	Uart_u8recive(&topic_len_lsb);
 
-		// Read the topic based on the topic length
-		for (u16 i = 0; i < topic_length; i++) {
-			Uart_u8recive(&Topic[i]);  // Store each byte of the topic
-		}
+	// Calculate topic length
+	topic_length = (topic_len_msb << 8) | topic_len_lsb;
 
-		// Null-terminate the topic string
-		Packet_buffer[topic_length] = '\0';
-
-		// Skip the payload (if any) - you can handle this part later
-		int payload_length = remaining_length - (2 + topic_length);
-		for (u16 i = 0; i < payload_length; i++) {
-			Uart_u8recive(&topic_len_msb); // Just discard the payload for now
-		}
+	// Read the topic based on the topic length
+	for (u16 i = 0; i < topic_length; i++) {
+		Uart_u8recive(&Packet_buffer[i]);  // Store each byte of the topic
 	}
-	else
-	{
-		for(u8 i=0;i<16;i++)
-		{
-			Topic[i]==undefined_topic[i];
-		}
+
+	// Null-terminate the topic string
+	Packet_buffer[topic_length] = '\0';
+
+	// Skip the payload (if any) - you can handle this part later
+	int payload_length = remaining_length - (2 + topic_length);
+	for (u16 i = 0; i < payload_length; i++) {
+		Uart_u8recive(Payload);
 	}
+
 
 }
+
 
