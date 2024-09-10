@@ -25,4 +25,4 @@ also you could make mobile page using MOT
 
 **small video to run**
 
-![video](images/vedio.mkv)
+![video](images/vedio.mp4)
