@@ -26,7 +26,7 @@
  </MODULE>
  <MODULE name="VSMDEBUG">
   <PWI>
-   <POPUP w="800" x="48" flags="00000003" y="160" h="200" pid="0" iid="-1">
+   <POPUP w="800" x="208" flags="00000003" y="48" h="200" pid="0" iid="-1">
     <PROPERTIES>
      <ITEM name="Message Column Width">661</ITEM>
      <ITEM name="ShowGrid">No</ITEM>
@@ -52,13 +52,13 @@
      <ITEM name="nItems">0</ITEM>
     </PROPERTIES>
    </POPUP>
-   <POPUP w="736" x="229" flags="00008023" y="619" h="237" pid="0" iid="5">
+   <POPUP w="736" x="158" flags="00000023" y="656" h="237" pid="0" iid="5">
     <PROPERTIES>
      <ITEM name="AutoEcho">0</ITEM>
      <ITEM name="HexMode">1</ITEM>
     </PROPERTIES>
    </POPUP>
-   <POPUP w="1555" x="162" flags="00000023" y="50" h="250" pid="0" iid="6">
+   <POPUP w="1555" x="208" flags="00000022" y="588" h="250" pid="0" iid="6">
     <PROPERTIES>
      <ITEM name="AutoEcho">0</ITEM>
      <ITEM name="HexMode">0</ITEM>
@@ -127,15 +127,15 @@
      <ITEM name="TopLineAddress">00000020</ITEM>
     </PROPERTIES>
    </POPUP>
-   <POPUP w="908" x="253" flags="0000000b" y="38" h="696" pid="1" iid="1">
+   <POPUP w="908" x="484" flags="0000800b" y="250" h="696" pid="1" iid="1">
     <PROPERTIES/>
    </POPUP>
-   <POPUP w="604" x="1144" flags="0000000b" y="286" h="550" pid="2" iid="1">
+   <POPUP w="604" x="1316" flags="0000000b" y="306" h="550" pid="2" iid="1">
     <PROPERTIES>
-     <ITEM name="Address Column Width">93</ITEM>
+     <ITEM name="Address Column Width">95</ITEM>
      <ITEM name="AutoResize">No</ITEM>
      <ITEM name="Gridlines">Yes</ITEM>
-     <ITEM name="Name Column Width">93</ITEM>
+     <ITEM name="Name Column Width">208</ITEM>
      <ITEM name="ShowAddresses">Yes</ITEM>
      <ITEM name="ShowGlobals">Yes</ITEM>
      <ITEM name="ShowPreviousValues">No</ITEM>
@@ -148,7 +148,9 @@
     </PROPERTIES>
    </POPUP>
   </PWI>
-  <BREAKPOINT LINE="31" FILE="main.c" ADDRESS="4294967295" PROJECT="-1"/>
+  <BREAKPOINT LINE="31" ENABLED="FALSE" FILE="main.c" ADDRESS="4294967295" PROJECT="-1"/>
   <BREAKPOINT LINE="182" FILE="libr/MQTT.c" ADDRESS="4294967295" PROJECT="-1"/>
+  <BREAKPOINT LINE="35" FILE="main.c" ADDRESS="4294967295" PROJECT="-1"/>
+  <BREAKPOINT LINE="44" ENABLED="FALSE" FILE="main.c" ADDRESS="4294967295" PROJECT="-1"/>
  </MODULE>
 </WORKSPACE>
