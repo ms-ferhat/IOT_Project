@@ -18,6 +18,7 @@
 
 /***********   MQTT vars  *****************/
 #define Publish_Topic	"Phone/Traffic/Color"
+#define Subscr_Topic	"Phone/Traffic/Control"
 #define Client_id		"Client2"
 #define username		"MoTSensorKitv2.0_Menya"
 #define password		"MoTSensorKitv2.0_Menya_pass"
@@ -25,6 +26,7 @@
 u8 payload =0;
 u8 fixed_header;
 /************  general vars **************/
+u8 counter=0;
 #define red			1
 #define yellow 		2
 #define	green		4
@@ -32,21 +34,23 @@ u8 fixed_header;
 #define red_c		"red"
 #define yellow_c	"yellow"
 #define green_c		"green"
-
+/***********  funcation  ******************/
+void mqtt_notify(void);
 
 
 void main(void)
 {
-	u8 counter=0;
+
 	PORT_voidInti();
 	Uart_voidInti();
 	GIE_voidEnable();
 	MQTT_connect(Client_id, username, password);
 	MQTT_Recive_Packet(&payload, &fixed_header);
-	_delay_ms(2000);
-//	MQTT_Subscribe(Topic);
-//	MQTT_recive_message(&payload, &fixed_header);
-//	_delay_ms(5000);
+
+	MQTT_Subscribe(Subscr_Topic);
+	MQTT_Recive_Packet(&payload, &fixed_header);
+	Uart_u8recive_Asyn(&fixed_header);
+	uart_u8setcallback(&mqtt_notify);
 
 
 	while(1)
@@ -55,30 +59,38 @@ void main(void)
 		{
 			DIO_u8SetPort(DIO_u8PORTA, red);				//turn red led on
 			MQTT_Publish(Publish_Topic, red_c, 3, Qos);		//publish MOT platform
-			//MQTT_Recive_Packet(&payload, &fixed_header);	//recive pubACK packet
 			counter++;										//increase counter
 		}
 		else if(counter >= 15 && counter <20)
 		{
 			DIO_u8SetPort(DIO_u8PORTA, yellow);
 			MQTT_Publish(Publish_Topic, yellow_c, 6, Qos);
-			//MQTT_Recive_Packet(&payload, &fixed_header);
+
 			counter++;
 		}
 		else if(counter >= 20 && counter < 30)
 		{
 			DIO_u8SetPort(DIO_u8PORTA, green);
 			MQTT_Publish(Publish_Topic, green_c, 5, Qos);
-			//MQTT_Recive_Packet(&payload, &fixed_header);
 			counter++;
 		}else
 		{
 			counter=0;
 		}
 		_delay_ms(1000);
-
-
-
 	}
+}
+void mqtt_notify(void)
+{
+	Uart_u8recive(&fixed_header);
+	for(u8 i=0;i<fixed_header;i++)
+	{
+		Uart_u8recive(&payload);
+	}
+	if(payload == '1')
+	{
+		counter=20;
+	}
+	Uart_u8recive_Asyn(&fixed_header);
 }
 

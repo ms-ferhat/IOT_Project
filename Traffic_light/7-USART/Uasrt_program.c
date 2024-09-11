@@ -307,7 +307,7 @@ void __vector_13 (void)
 		// disable receive interrupt
 		CLR_BIT(UCSRB,UCSRB_RXCIE);
 		// call notification function
-		//Uart_pvfun();
+		Uart_pvfun();
 	}
 	else if(Uart_Recive_flag==Recive_String)
 	{
